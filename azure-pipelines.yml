@@ -20,3 +20,19 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+    
+# pick up the results of the build (JAR file) and stage them.
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(System.DefaultWorkingDirectory)/target'
+    Contents: '*.jar'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: Stage Jar files for publishing
+- task: PublishPipelineArtifact@1
+
+# Upload the results into the pipeline. This files will be used in the release pipeline
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)'
+    artifact: 'Binaries'
+    publishLocation: 'pipeline'
+  displayName: Publish Jar file
